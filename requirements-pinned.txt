@@ -1,0 +1,8 @@
+matplotlib==3.7.0
+networkx==3.0
+normflows==1.6.1
+numpy==1.24.0
+pandas==1.5.3
+pytorch-lightning==1.8.6
+torch==2.0.0
+wandb==0.13.7
