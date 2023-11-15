@@ -15,5 +15,8 @@ setup(
     long_description_content_type="text/markdown",
     python_requires=">=3.9.0",
     install_requires=parse_requirements("./requirements.txt"),
+    extras_require={
+        "plots": parse_requirements("./requirements-plots.txt"),
+    },
     license="MIT",
 )

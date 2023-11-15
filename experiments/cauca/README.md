@@ -22,4 +22,23 @@ python -m experiments.cauca.main [-h] [--max-epochs MAX_EPOCHS] [--accelerator A
                [--nonparametric-base-distr | --no-nonparametric-base-distr] [--wandb | --no-wandb]
                [--wandb-project WANDB_PROJECT]
 ```
-The full list of arguments is given in the table below.
+
+## Plotting the results
+
+We suggest using [weights and biases (wandb)](https://wandb.ai/) to track the experiments and save the results to csv files.
+The experiment script can be run without wandb (using `--no-wandb`), but the results will not be saved to any output files.
+A custom logger would need to be implemented in `experiments/cauca/main.py` to save the results to csv files.
+
+The csv files generated for the results shown in the paper can be found in the `experiments/cauca/results/data` directory.
+The results can be plotted using the `experiments/cauca/results/create_figures.ipynb` notebook.
+
+In order to install the required packages, run
+```bash
+pip install -e ".[plots]"
+```
+from the root directory of the repository. The notebooks are tracked in version control using
+[jupytext](https://github.com/mwouts/jupytext).
+In order to set up the `.ipynb` files, run
+```bash
+jupytext experiments/cauca/results/create_figures.py --to .ipynb
+```
