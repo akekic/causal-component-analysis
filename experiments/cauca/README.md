@@ -42,3 +42,4 @@ In order to set up the `.ipynb` files, run
 ```bash
 jupytext experiments/cauca/results/create_figures.py --to .ipynb
 ```
+Then execute the notebook.
