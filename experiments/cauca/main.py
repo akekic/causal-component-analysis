@@ -41,7 +41,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--checkpoint-root-dir",
         type=str,
-        default="/home/akekic/repos/multi-env-crl/checkpoints_ica",  # TODO: remove or change to project root
+        default="checkpoints",
         help="Checkpoint root directory.",
     )
     parser.add_argument(
