@@ -20,6 +20,65 @@ python -m experiments.nonparam_ident.main.py [-h] [--max-epochs MAX_EPOCHS] [--a
                [--nonparametric-base-distr | --no-nonparametric-base-distr] [--wandb | --no-wandb] [--wandb-project WANDB_PROJECT]
 ```
 
+## Reproducing the results
+
+Here we list the commands needed to produce the results shown in the paper.
+<details>
+<summary>Click to show full list of commands</summary>
+
+- **Description:** parametric CauCA.
+  - **Command:**
+    ```bash
+    python -m experiments.nonparam_ident.main --seed <S> --training-seed <T> --model nonlinear --batch-size 4096 --lr 5e-4 --max-epochs 200 --k-flows 12 --dgp graph-2-1 --n-nonlinearities 3 --lr-scheduler cosine --lr-min 1e-7 --scm-coeffs-low -10 --scm-coeffs-high 10 --scm-coeffs-min-abs-value 2 --no-fix-mechanisms
+    ```
+    where `S=0, ...,49` and `T=0, 1, 2` are used for the different seeds.
+  - **Output file:** `experiments/nonparam_ident/results/data/3_nonlin_cauca_2vars_10scm_min2.csv`
+  - **Used in:** Figure 3.
+- **Description:** parametric CauCA with intervention target and adjacency misspecification.
+  - **Command:**
+    ```bash
+    python -m experiments.nonparam_ident.main --seed <S> --training-seed <T> --model nonlinear --batch-size 4096 --lr 5e-4 --max-epochs 200 --k-flows 12 --dgp graph-2-1 --n-nonlinearities 3 --lr-scheduler cosine --lr-min 1e-7 --scm-coeffs-low -10 --scm-coeffs-high 10 --scm-coeffs-min-abs-value 2 --adjacency-misspec --intervention-target-misspec --fix-all-intervention-targets
+    ```
+    where `S=0, ...,49` and `T=0, 1, 2` are used for the different seeds.
+  - **Output file:** `experiments/nonparam_ident/results/data/3_nonlin_cauca_both_misspec_2vars_10scm_min2.csv`
+  - **Used in:** Figure 3.
+- **Description:** parametric CauCA with intervention target misspecification.
+  - **Command:**
+    ```bash
+    python -m experiments.nonparam_ident.main --seed <S> --training-seed <T> --model nonlinear --batch-size 4096 --lr 5e-4 --max-epochs 200 --k-flows 12 --dgp graph-2-1 --n-nonlinearities 3 --lr-scheduler cosine --lr-min 1e-7 --scm-coeffs-low -10 --scm-coeffs-high 10 --scm-coeffs-min-abs-value 2 --intervention-target-misspec --fix-all-intervention-targets
+    ```
+    where `S=0, ...,49` and `T=0, 1, 2` are used for the different seeds.
+  - **Output file:** `experiments/nonparam_ident/results/data/3_nonlin_cauca_int_misspec_2vars_10scm_min2.csv`
+  - **Used in:** Figure 3.
+- **Description:** parametric CauCA with adjacency misspecification.
+  - **Command:**
+    ```bash
+    python -m experiments.nonparam_ident.main --seed <S> --training-seed <T> --model nonlinear --batch-size 4096 --lr 5e-4 --max-epochs 200 --k-flows 12 --dgp graph-2-1 --n-nonlinearities 3 --lr-scheduler cosine --lr-min 1e-7 --scm-coeffs-low -10 --scm-coeffs-high 10 --scm-coeffs-min-abs-value 2 --adjacency-misspec --fix-all-intervention-targets
+    ```
+    where `S=0, ...,49` and `T=0, 1, 2` are used for the different seeds.
+  - **Output file:** `experiments/nonparam_ident/results/data/3_nonlin_cauca_misspec_2vars_10scm_min2.csv`
+  - **Used in:** Figure 3.
+- **Description:** nonparametric CauCA.
+  - **Command:**
+    ```bash
+    python -m experiments.nonparam_ident.main --seed <S> --training-seed <T> --model nonlinear --scm location-scale --nonparametric-base-distr --batch-size 4096 --lr 5e-4 --max-epochs 150 --k-flows 12 --dgp graph-3-1 --n-nonlinearities 3 --lr-scheduler cosine --lr-min 1e-7 --snr 10.0
+    ```
+    where `S=0, ...,19` and `T=0, 1, 2` are used for the different seeds.
+  - **Output file:** `experiments/nonparam_ident/results/data/3var_snr10_012.csv`
+  - **Used in:** Figure 4.
+- **Description:** nonparametric CauCA with intervention target permutation.
+  - **Command:**
+    ```bash
+    python -m experiments.nonparam_ident.main --seed <S> --training-seed <T>  --intervention-target-perm <P> --model nonlinear --scm location-scale --nonparametric-base-distr --batch-size 4096 --lr 5e-4 --max-epochs 150 --k-flows 12 --dgp graph-3-1 --n-nonlinearities 3 --lr-scheduler cosine --lr-min 1e-7 --snr 10.0  --intervention-target-misspec
+    ```
+    where `S=0, ...,19` and `T=0, 1, 2` are used for the different seeds and `P ∈ {"0 2 1", "1 0 2", "1 2 0", "2 0 1", "2 1 0"}`
+    are the different permutations of the intervention targets.
+  - **Output file:** `experiments/nonparam_ident/results/data/3var_snr10_<P>.csv`
+  - **Used in:** Figure 4.
+
+
+</details>
+
 ## Plotting the results
 
 We suggest using [weights and biases (wandb)](https://wandb.ai/) to track the experiments and save the results to csv files.
