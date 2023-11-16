@@ -130,7 +130,7 @@ class NonlinearMixing(MixingFunction):
     ) -> None:
         super().__init__(latent_dim, observation_dim)
         assert latent_dim == observation_dim
-        self.coefs = torch.rand((latent_dim, observation_dim))  # TODO: remove
+        self.coefs = torch.rand((latent_dim, observation_dim))
         self.n_nonlinearities = n_nonlinearities
 
         matrices = []
