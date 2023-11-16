@@ -21,7 +21,8 @@ def mean_correlation_coefficient(v_hat: Tensor, v: Tensor, method="pearson") -> 
         best_p_idx = torch.argmax(corr_coefficients_perm.sum(dim=1))
         corr_coefficients = corr_coefficients_perm[best_p_idx]
     elif method == "spearman":
-        # TODO: spearman does not work with all permutations
+        # Note: spearman does not check all permutations and does not work with
+        # intervention target permutation
         spearman = SpearmanCorrCoef(num_outputs=v.shape[1])
         corr_coefficients = torch.abs(spearman(v_hat, v))
     else:

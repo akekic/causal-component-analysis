@@ -52,7 +52,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--checkpoint-root-dir",
         type=str,
-        default="/home/akekic/repos/multi-env-crl/checkpoints_ica",  # TODO: remove or change to project root
+        default="checkpoints",
         help="Checkpoint root directory.",
     )
     parser.add_argument(
@@ -90,7 +90,7 @@ if __name__ == "__main__":
         "--model",
         type=str,
         default="nonlinear",
-        help="Type of encoder to use.",  # TODO: more descriptive
+        help="Type of encoder to use.",
         choices=["linear", "nonlinear", "naive"],
     )
     parser.add_argument(
@@ -150,7 +150,7 @@ if __name__ == "__main__":
         help="Lower bound for SCM coefficients.",
     )
     parser.add_argument(
-        "--scm-coeffs-high",  # TODO: maybe consolidate with SNR?
+        "--scm-coeffs-high",
         type=float,
         default=1,
         help="Upper bound for SCM coefficients.",
@@ -270,7 +270,7 @@ if __name__ == "__main__":
         latent_dim=DGP[args.dgp]["num_causal_variables"],
         observation_dim=DGP[args.dgp]["observation_dim"],
         adjacency_matrix=DGP[args.dgp]["adj_matrix"],
-        intervention_targets_per_env=DGP[args.dgp]["int_targets"],  # TODO: rename
+        intervention_targets_per_env=DGP[args.dgp]["int_targets"],
         noise_shift_type=args.noise_shift_type,
         mixing=args.mixing,
         scm=args.scm,
