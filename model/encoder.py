@@ -109,7 +109,7 @@ class CauCAEncoder(nf.NormalizingFlow):
 
     def multi_env_log_prob(
         self, x: Tensor, e: Tensor, intervention_targets: Tensor
-    ) -> Tensor:
+    ) -> tuple[Tensor, dict[str, Tensor]]:
         raise NotImplementedError
 
     def forward(self, x: Tensor) -> Tensor:

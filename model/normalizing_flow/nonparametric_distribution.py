@@ -23,7 +23,7 @@ class MultiEnvBaseDistribution(nf.distributions.BaseDistribution):
         gaussian_nll = gaussian_nll_loss(
             x, torch.zeros_like(x), torch.ones_like(x), full=True, reduction="none"
         )
-        mask = ~intervention_targets.to(bool)
+        mask = ~intervention_targets.to(torch.bool)
         log_p = -(mask * gaussian_nll).sum(dim=1)
         return log_p
 
@@ -117,7 +117,7 @@ class NonparamMultiEnvCausalDistribution(nf.NormalizingFlow):
         )[1]
         jac_diag_element = (jac_row * intervention_targets).sum(dim=1)
         # mask zero elements
-        not_intervened_mask = ~intervention_targets.sum(dim=1).to(bool)
+        not_intervened_mask = ~intervention_targets.sum(dim=1).to(torch.bool)
         jac_diag_element[not_intervened_mask] = 1
         log_q -= log(abs(jac_diag_element) + 1e-8)
         return log_q, u
@@ -129,6 +129,6 @@ class NonparamMultiEnvCausalDistribution(nf.NormalizingFlow):
         gaussian_nll = gaussian_nll_loss(
             z, torch.zeros_like(z), torch.ones_like(z), full=True, reduction="none"
         )
-        mask = intervention_targets.to(bool)
+        mask = intervention_targets.to(torch.bool)
         prob_terms_intervention_targets = -(mask * gaussian_nll).sum(dim=1)
         return prob_terms_intervention_targets

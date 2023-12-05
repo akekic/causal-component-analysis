@@ -1,6 +1,6 @@
 from abc import ABC
 from functools import partial
-from typing import Optional
+from typing import Optional, Callable
 
 import networkx as nx
 import numpy as np
@@ -20,7 +20,7 @@ class MultiEnvLatentSCM(ABC):
     Base class for multi-environment latent SCM.
 
     In environments where a variable is intervened on, the dependencies of the variable are cut. Note that this
-    class only implements the causal mechanisms. The exogenous noise variables, which mayb also shift under
+    class only implements the causal mechanisms. The exogenous noise variables, which maybe also shift under
     interventions, are implemented in the noise generator.
 
     Attributes
@@ -75,9 +75,10 @@ class MultiEnvLatentSCM(ABC):
         self.dag = nx.DiGraph(adjacency_matrix)
         self.topological_order = list(nx.topological_sort(self.dag))
 
-        self.functions_per_env = None
-        self.inverse_jac_per_env = None
-
+        self.functions_per_env: dict[int, dict[int, Callable]]
+        self.inverse_jac_per_env: dict[int, dict[int, Callable]]
+        self.base_coeff_values: list[Tensor]
+        
     def push_forward(self, u: Tensor, env: int) -> Tensor:
         """
         Push forward the latent variable u through the SCM in environment env.
@@ -118,7 +119,7 @@ class MultiEnvLatentSCM(ABC):
         log_inv_jac: Tensor, shape (num_samples,)
             Log of the inverse Jacobian of the SCM at v and u.
         """
-        log_inv_jac = 0.0
+        log_inv_jac = torch.zeros_like(u[:, 0])
         for index in self.topological_order:
             log_inv_jac += torch.log(self.inverse_jac_per_env[env][index](v, u))
         return log_inv_jac
@@ -176,9 +177,9 @@ class LinearSCM(MultiEnvLatentSCM):
         self.coeffs_high = coeffs_high
         self.coeffs_min_abs_value = coeffs_min_abs_value
 
-        base_functions = []
-        base_inverse_jac = []
-        base_coeff_values = []
+        base_functions: list[Callable] = []
+        base_inverse_jac: list[Callable] = []
+        base_coeff_values: list[Tensor] = []
         for index in range(self.latent_dim):
             parents = torch.tensor(
                 list(self.dag.predecessors(index)), dtype=torch.int64
@@ -186,7 +187,7 @@ class LinearSCM(MultiEnvLatentSCM):
             coeffs = sample_coeffs(
                 self.coeffs_low,
                 self.coeffs_high,
-                (len(parents) + 1,),
+                torch.Size((len(parents) + 1,)),
                 min_abs_value=self.coeffs_min_abs_value,
             )
             coeffs[-1] = 1  # set the noise coefficient to 1
@@ -203,8 +204,8 @@ class LinearSCM(MultiEnvLatentSCM):
                 )
             )
             base_coeff_values.append(coeffs)
-        self.base_functions = base_functions
-        self.base_inverse_jac = base_inverse_jac
+        self.base_functions: list[Callable] = base_functions
+        self.base_inverse_jac: list[Callable] = base_inverse_jac
         self.base_coeff_values = base_coeff_values
         self.functions_per_env, self.inverse_jac_per_env = self.setup_functions_per_env(
             intervention_targets_per_env
@@ -212,7 +213,7 @@ class LinearSCM(MultiEnvLatentSCM):
 
     def setup_functions_per_env(
         self, intervention_targets_per_env: Tensor
-    ) -> tuple[dict[int, callable], dict[int, callable]]:
+    ) -> tuple[dict[int,dict[int, Callable]], dict[int,dict[int, Callable]]]:
         """
         Set up the functions_per_env and inverse_jac_per_env attributes. This is where the linear
         causal mechanisms are defined.
@@ -250,13 +251,13 @@ class LinearSCM(MultiEnvLatentSCM):
                     )
                     coeffs = torch.zeros((len(parents) + 1,))  # cut edges from parents
                     coeffs[-1] = 1.0  # still use noise
-                    f = partial(
+                    f: Callable = partial(
                         linear_base_func,
                         index=index,
                         parents=parents,
                         coeffs=coeffs,
                     )
-                    inverse_jac = partial(
+                    inverse_jac: Callable = partial(
                         linear_inverse_jacobian,
                         index=index,
                         parents=parents,
@@ -332,15 +333,15 @@ class LocationScaleSCM(MultiEnvLatentSCM):
             )
             base_functions.append(f)
             base_inverse_jac.append(inverse_jac)
-        self.base_functions = base_functions
-        self.base_inverse_jac = base_inverse_jac
+        self.base_functions: list[Callable] = base_functions
+        self.base_inverse_jac: list[Callable] = base_inverse_jac
         self.functions_per_env, self.inverse_jac_per_env = self.setup_functions_per_env(
             intervention_targets_per_env
         )
 
     def setup_functions_per_env(
         self, intervention_targets_per_env: Tensor
-    ) -> tuple[dict[int, callable], dict[int, callable]]:
+    ) -> tuple[dict[int,dict[int, Callable]], dict[int,dict[int, Callable]]]:
         functions_per_env = {}
         inverse_jac_per_env = {}
         num_envs = intervention_targets_per_env.shape[0]
@@ -350,7 +351,7 @@ class LocationScaleSCM(MultiEnvLatentSCM):
             inverse_jac_env = {}
             for index in self.topological_order:
                 if intervention_targets_per_env[env][index] == 1:
-                    parents = []
+                    parents: list[int] = []
                     f, inverse_jac = make_location_scale_function(
                         index, parents, self.n_nonlinearities, self.snr
                     )

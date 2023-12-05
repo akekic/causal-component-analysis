@@ -160,9 +160,9 @@ class GaussianNoise(MultiEnvNoise):
                         if intervention_targets_per_env[e][i] == 1:
                             coin_flip = torch.randint(0, 2, (1,)).item()  # 0 or 1
                             std_scaling_factor = (
-                                Uniform(0.25, 0.75).sample((1,))
+                                Uniform(0.25, 0.75).sample(torch.Size((1,)))
                                 if coin_flip == 0
-                                else Uniform(1.25, 1.75).sample((1,))
+                                else Uniform(1.25, 1.75).sample(torch.Size((1,)))
                             )
                             stds[i] = stds[i] * std_scaling_factor
                 stds_per_env[e] = stds

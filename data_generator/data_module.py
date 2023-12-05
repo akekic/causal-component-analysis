@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Union
 
 import torch
 from pytorch_lightning import LightningDataModule
@@ -56,7 +56,7 @@ class MultiEnvDataModule(LightningDataModule):
         intervention_targets_per_env: Tensor,
         log_dir: Optional[Path] = None,
         intervention_target_misspec: bool = False,
-        intervention_target_perm: Optional[list[int]] = None,
+        intervention_target_perm: Optional[Union[list[int],Tensor]] = None,
     ) -> None:
         super().__init__()
         self.medgp = multi_env_dgp
@@ -72,8 +72,11 @@ class MultiEnvDataModule(LightningDataModule):
             intervention_target_perm is None
             or len(intervention_target_perm) == latent_dim
         )
-        self.intervention_target_perm = intervention_target_perm
-
+        if intervention_target_perm is None:
+            self.intervention_target_perm = None
+        else:
+            self.intervention_target_perm = Tensor(intervention_target_perm)
+            
     def setup(self, stage: Optional[str] = None) -> None:
         latent_dim = self.medgp.latent_scm.latent_dim
         num_envs = self.intervention_targets_per_env.shape[0]

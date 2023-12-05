@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC
 from itertools import product
-from typing import Optional, List, Union
+from typing import Optional, List, Union, Any
 
 import numpy as np
 import pytorch_lightning as pl
@@ -10,9 +10,14 @@ import torch
 from torch import Tensor
 from torch.optim import Optimizer
 
-from .encoder import LinearCauCAEncoder, NaiveEncoder, NonlinearCauCAEncoder
+from .encoder import CauCAEncoder, LinearCauCAEncoder, NaiveEncoder, NonlinearCauCAEncoder
 from .utils import mean_correlation_coefficient
 
+
+NETWORK_OUTPUT = list[Tensor | dict[str, Any]] | list[list[Tensor | dict[str, Any]]]
+"""
+Type alias for the output of the validation and test set.
+"""
 
 class CauCAModel(pl.LightningModule, ABC):
     """
@@ -90,7 +95,7 @@ class CauCAModel(pl.LightningModule, ABC):
         self.weight_decay = weight_decay
         self.lr_scheduler = lr_scheduler
         self.lr_min = lr_min
-        self.encoder = None  # needs to be set in subclasses
+        self.encoder: CauCAEncoder
         self.save_hyperparameters()
 
     @staticmethod
@@ -136,13 +141,14 @@ class CauCAModel(pl.LightningModule, ABC):
             "v": v,
             "v_hat": v_hat,
         }
+    
+    def validation_epoch_end(self, outputs: NETWORK_OUTPUT) -> None:
+        
+        log_prob = torch.cat([o["log_prob"] for o in outputs if isinstance(o,dict)])
+        log_prob_gt = torch.cat([o["log_prob_gt"] for o in outputs if isinstance(o,dict)])
 
-    def validation_epoch_end(self, outputs: List[dict]) -> None:
-        log_prob = torch.cat([o["log_prob"] for o in outputs])
-        log_prob_gt = torch.cat([o["log_prob_gt"] for o in outputs])
-
-        v = torch.cat([o["v"] for o in outputs])
-        v_hat = torch.cat([o["v_hat"] for o in outputs])
+        v = torch.cat([o["v"] for o in outputs if isinstance(o,dict)])
+        v_hat = torch.cat([o["v_hat"] for o in outputs if isinstance(o,dict)])
         mcc = mean_correlation_coefficient(v_hat, v)
         mcc_spearman = mean_correlation_coefficient(v_hat, v, method="spearman")
 
@@ -170,12 +176,12 @@ class CauCAModel(pl.LightningModule, ABC):
             "v_hat": self(x),
         }
 
-    def test_epoch_end(self, outputs: List[dict]) -> None:
-        log_prob = torch.cat([o["log_prob"] for o in outputs])
+    def test_epoch_end(self, outputs: NETWORK_OUTPUT) -> None:
+        log_prob = torch.cat([o["log_prob"] for o in outputs if isinstance(o,dict)])
         loss = -log_prob.mean()
 
-        v = torch.cat([o["v"] for o in outputs])
-        v_hat = torch.cat([o["v_hat"] for o in outputs])
+        v = torch.cat([o["v"] for o in outputs if isinstance(o,dict)])
+        v_hat = torch.cat([o["v_hat"] for o in outputs if isinstance(o,dict)])
         mcc = mean_correlation_coefficient(v_hat, v)
 
         self.log("test_loss", loss, prog_bar=False)
@@ -184,12 +190,18 @@ class CauCAModel(pl.LightningModule, ABC):
             self.log(f"test_mcc_{i}", mcc_value, prog_bar=False)
 
     def configure_optimizers(self) -> dict | torch.optim.Optimizer:
-        config_dict = {}
+        config_dict: dict[str, Any] = {}
         optimizer = torch.optim.Adam(
             self.parameters(), lr=self.lr, weight_decay=self.weight_decay
         )
         config_dict["optimizer"] = optimizer
 
+        if self.trainer.max_epochs is None:
+            raise RuntimeError(
+                f"The attribute 'max_epochs of the trainer {type(self.trainer)}' "+
+                f"is None, an int value if expected"
+            )
+        
         if self.lr_scheduler == "cosine":
             # cosine learning rate annealing
             lr_scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
@@ -216,6 +228,11 @@ class CauCAModel(pl.LightningModule, ABC):
     def on_before_optimizer_step(
         self, optimizer: Optimizer, optimizer_idx: int
     ) -> None:
+        if self.encoder.intervention_targets_per_env is None:
+            raise RuntimeError(
+                "The attribute 'intervention_targets_per_env' of the encoder "
+                f"{type(self.encoder)} is None, a Tensor is expected"
+            )
         num_envs = len(self.encoder.intervention_targets_per_env)
         num_vars = self.adjacency_matrix.shape[0]
 
