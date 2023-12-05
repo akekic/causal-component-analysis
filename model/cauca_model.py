@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC
 from itertools import product
-from typing import Optional, List, Union, Any
+from typing import Optional, List, Union, Any, Dict
 
 import numpy as np
 import pytorch_lightning as pl
@@ -14,7 +14,7 @@ from .encoder import CauCAEncoder, LinearCauCAEncoder, NaiveEncoder, NonlinearCa
 from .utils import mean_correlation_coefficient
 
 
-NETWORK_OUTPUT = list[Tensor | dict[str, Any]] | list[list[Tensor | dict[str, Any]]]
+NETWORK_OUTPUT = Union[List[Union[Tensor, Dict[str, Any]]], List[List[Union[Tensor, Dict[str, Any]]]]]
 """
 Type alias for the output of the validation and test set.
 """
