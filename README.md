@@ -15,13 +15,13 @@ This project includes implementations and experiments related to the papers:
     [Causal Component Analysis](https://openreview.net/forum?id=HszLRiHyfO).
     In Proceedings of the Thirty-seventh Conference on Neural Information Processing Systems.
     
-    The corrsponding experiments are in the [experiments/cauca](experiments/cauca/README.md) folder.
+    The corresponding experiments are in the [experiments/cauca](experiments/cauca/README.md) folder.
 
 2.  > von Kügelgen, J., Besserve, M., Liang, W., Gresele, L., Kekić, A., Bareinboim, E., Blei, D., & Schölkopf, B. (2023).
     [Nonparametric Identifiability of Causal Representations from Unknown Interventions](https://openreview.net/forum?id=V87gZeSOL4).
     In Proceedings of the Thirty-seventh Conference on Neural Information Processing Systems.
     
-    The corrsponding experiments are in the [experiments/nonparam_ident](experiments/nonparam_ident/README.md) folder.
+    The corresponding experiments are in the [experiments/nonparam_ident](experiments/nonparam_ident/README.md) folder.
 ## Installation
 Clone the repository
 ```bash
