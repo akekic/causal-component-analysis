@@ -36,3 +36,12 @@ __pycache__/
 # directories
 wandb/
 checkpoints/
+
+# emacs
+*~
+
+# mkdocs
+site
+
+# virtual env
+venv

@@ -1,0 +1,16 @@
+site_name: Causal Component Analysis
+site_url: https://github.com/akekic/causal-component-analysis/
+
+
+plugins:
+  - search
+  - autorefs
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            show_submodules: true
+
+nav:
+  - About: index.md
+  - API: references.md

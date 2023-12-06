@@ -4,10 +4,10 @@
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![license: MIT](https://img.shields.io/badge/license-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![arXiv](https://img.shields.io/badge/arXiv-2305.17225-00ff00.svg)](https://arxiv.org/abs/2305.17225)
+[![documentation](https://github.com/akekic/causal-component-analysis/actions/workflows/mkdocs.yaml/badge.svg)](https://akekic.github.io/causal-component-analysis/)
 
 
-
-![Cauca](cauca.png)
+![Cauca](https://raw.githubusercontent.com/akekic/causal-component-analysis/master/cauca.png)
 ## Overview
 _Causal Component Analysis_ is a project that bridges the gap between Independent Component Analysis (ICA) and Causal Representation Learning (CRL).
 This project includes implementations and experiments related to the papers:
@@ -21,7 +21,7 @@ This project includes implementations and experiments related to the papers:
     [Nonparametric Identifiability of Causal Representations from Unknown Interventions](https://openreview.net/forum?id=V87gZeSOL4).
     In Proceedings of the Thirty-seventh Conference on Neural Information Processing Systems.
     
-    The corrsponding experiments are in the [experiments/nonparam_ident](experiments/nonparam_ident/README.md) folder.
+    The corrsponding experiments are in the [experiments/nonparam_ident](https://raw.githubusercontent.com/akekic/causal-component-analysis/master/experiments/nonparam_ident/README.md) folder.
 ## Installation
 Clone the repository
 ```bash
@@ -36,7 +36,7 @@ pip install -e .
 
 
 ## License
-This project is licensed under the [MIT license](https://opensource.org/licenses/MIT). See the [LICENSE](LICENSE) file for details.
+This project is licensed under the [MIT license](https://opensource.org/licenses/MIT). See the [LICENSE](https://raw.githubusercontent.com/akekic/causal-component-analysis/master/LICENSE) file for details.
 
 ## Citation
 
