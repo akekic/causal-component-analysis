@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Optional, Union
+from typing import Optional, Union, Callable
 
 import networkx as nx
 import numpy as np
@@ -65,7 +65,7 @@ def sample_invertible_matrix(n: int) -> Tensor:
 def sample_coeffs(
     low: float = 0.0,
     high: float = 1.0,
-    size: tuple[int] = (1,),
+    size: torch.Size = torch.Size((1,)),
     min_abs_value: Optional[float] = None,
 ) -> Tensor:
     if min_abs_value is not None:
@@ -107,7 +107,7 @@ def sample_random_matrix(*size: int) -> Tensor:
 
 def make_random_nonlinear_func(
     input_dim: int, output_dim: int, n_nonlinearities: int
-) -> callable:
+) -> Callable[[Tensor], Tensor]:
     assert input_dim > 0, "input_dim must be positive"
     assert output_dim > 0, "output_dim must be positive"
     assert n_nonlinearities > 0, "must have at least one nonlinearity"
@@ -135,7 +135,7 @@ def make_location_scale_function(
     parents: Union[list[int], Tensor],
     n_nonlinearities: int,
     snr: float = 1.0,
-) -> tuple[callable, callable]:
+)-> tuple[Callable[[Tensor, Tensor], Tensor], Callable[[Tensor, Tensor], Tensor]]:
     if len(parents) == 0:
         return lambda v, u: u[:, index], lambda v, u: torch.ones_like(u[:, index])
 

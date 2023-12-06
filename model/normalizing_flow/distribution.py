@@ -185,7 +185,7 @@ class ParamMultiEnvCausalDistribution(MultiEnvCausalDistribution):
             coeff_values_requires_grad_i = []
             num_parents = len(list(dag.predecessors(i)))
             for j in range(num_parents):
-                random_val = Uniform(-1, 1).sample((1,))
+                random_val = Uniform(-1, 1).sample(torch.Size((1,)))
                 val = random_val
                 param = nn.Parameter(val * torch.ones(1), requires_grad=True).to(device)
                 coeff_values_i.append(param)
@@ -213,7 +213,7 @@ class ParamMultiEnvCausalDistribution(MultiEnvCausalDistribution):
             noise_means_e = []
             noise_means_requires_grad_e = []
             for i in range(dag.number_of_nodes()):
-                is_shifted = intervention_targets_per_env[e][i] == 1
+                is_shifted = int(intervention_targets_per_env[e][i]) == 1
                 is_root = len(list(dag.predecessors(i))) == 0
                 if fix_all_intervention_targets:
                     is_fixed = is_shifted
@@ -222,7 +222,7 @@ class ParamMultiEnvCausalDistribution(MultiEnvCausalDistribution):
                         not is_shifted and is_root
                     )
                 is_fixed = is_fixed and fix_mechanisms
-                random_val = Uniform(-0.5, 0.5).sample((1,))
+                random_val = Uniform(-0.5, 0.5).sample(torch.Size((1,)))
                 val = random_val
                 param = (
                     nn.Parameter(val * torch.ones(1), requires_grad=not is_fixed)
@@ -247,7 +247,7 @@ class ParamMultiEnvCausalDistribution(MultiEnvCausalDistribution):
             noise_stds_e = []
             noise_stds_requires_grad_e = []
             for i in range(dag.number_of_nodes()):
-                is_shifted = intervention_targets_per_env[e][i] == 1
+                is_shifted = int(intervention_targets_per_env[e][i]) == 1
                 is_root = len(list(dag.predecessors(i))) == 0
                 if fix_all_intervention_targets:
                     is_fixed = is_shifted
@@ -256,7 +256,7 @@ class ParamMultiEnvCausalDistribution(MultiEnvCausalDistribution):
                         not is_shifted and is_root
                     )
                 is_fixed = is_fixed and fix_mechanisms
-                random_val = Uniform(0.5, 1.5).sample((1,))
+                random_val = Uniform(0.5, 1.5).sample(torch.Size((1,)))
                 val = random_val
                 param = (
                     nn.Parameter(val * torch.ones(1), requires_grad=not is_fixed)

@@ -4,6 +4,8 @@
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![license: MIT](https://img.shields.io/badge/license-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![arXiv](https://img.shields.io/badge/arXiv-2305.17225-00ff00.svg)](https://arxiv.org/abs/2305.17225)
+![MyPy](https://github.com/akekic/causal-component-analysis/actions/workflows/mypy.yml/badge.svg?branch=master)
+
 
 
 

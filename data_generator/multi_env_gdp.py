@@ -1,6 +1,7 @@
 import numpy as np
 import torch
 from torch import Tensor
+from typing import Optional
 
 from .graph_sampler import sample_random_dag
 from .mixing_function import LinearMixing, MixingFunction, NonlinearMixing
@@ -147,8 +148,8 @@ def make_multi_env_dgp(
     n_nonlinearities: int = 1,
     scm_coeffs_low: float = -1,
     scm_coeffs_high: float = 1,
-    coeffs_min_abs_value: float = None,
-    edge_prob: float = None,
+    coeffs_min_abs_value: Optional[float] = None,
+    edge_prob: Optional[float] = None,
     snr: float = 1.0,
 ) -> MultiEnvDGP:
     """
@@ -194,6 +195,7 @@ def make_multi_env_dgp(
     medgp: MultiEnvDGP
         Multi-environment data generating process.
     """
+    mixing_function: MixingFunction
     if mixing == "linear":
         mixing_function = LinearMixing(
             latent_dim=latent_dim, observation_dim=observation_dim
@@ -215,6 +217,7 @@ def make_multi_env_dgp(
         adjacency_matrix = sample_random_dag(latent_dim, edge_prob)
     adjacency_matrix = adjacency_matrix
 
+    latent_scm: MultiEnvLatentSCM
     if scm == "linear":
         latent_scm = LinearSCM(
             adjacency_matrix=adjacency_matrix,

@@ -1,9 +1,11 @@
 from setuptools import setup, find_packages
 
+
 def parse_requirements(filename):
     """load requirements from a pip requirements file"""
     lineiter = (line.strip() for line in open(filename))
     return [line for line in lineiter if line and not line.startswith("#")]
+
 
 setup(
     name="causal-component-analysis",
@@ -17,6 +19,7 @@ setup(
     install_requires=parse_requirements("./requirements.txt"),
     extras_require={
         "plots": parse_requirements("./requirements-plots.txt"),
+        "dev": parse_requirements("./requirements-dev.txt"),
     },
     license="MIT",
 )
